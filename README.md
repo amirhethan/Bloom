@@ -9,8 +9,11 @@ Tauri v2 (Rust) + rusqlite, plain ES-module HTML/CSS/JS, no bundler, no framewor
 
 - **Windows:** `Bloom_0.1.0_x64-setup.exe` from the releases page. Per-user NSIS install, no admin rights,
   registers `.bloom` file association.
-- **Android:** `app-universal-debug.apk` (arm64). Debug-signed, so Android will warn about an unknown source —
-  allow it once. Same SQLite schema as the desktop build.
+- **Android:** `Bloom_0.1.0_arm64.apk` (arm64 / arm64-v8a, minSdk 24). Release build, signed with the committed
+  test key in `src-tauri/android/bloom-release.jks`, so Android will warn about an unknown source — allow it once.
+  Same SQLite schema as the desktop build.
+  The key is public on purpose: it is a signing identity for sideloaded builds, not a Play upload key. Replace it
+  (`keytool -genkeypair …`) before publishing to a store, and expect to uninstall/reinstall once when you do.
 
 ## Run it
 

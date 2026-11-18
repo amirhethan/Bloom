@@ -55,8 +55,18 @@ jobs:
       - name: Init the Android project
         run: cargo tauri android init --ci
         working-directory: src-tauri
-      - name: Build APK (debug-signed, installable)
-        run: cargo tauri android build --apk --debug --target aarch64
+      # the committed test key keeps updates installable across releases
+      - name: Signing config
+        run: |
+          cat > src-tauri/gen/android/keystore.properties <<EOF
+          storeFile=$GITHUB_WORKSPACE/src-tauri/android/bloom-release.jks
+          password=bloom-release
+          keyAlias=bloom
+          storePassword=bloom-release
+          keyPassword=bloom-release
+          EOF
+      - name: Build APK (release, signed)
+        run: cargo tauri android build --apk --target aarch64
         working-directory: src-tauri
       - uses: actions/upload-artifact@v4
         with:
@@ -75,9 +85,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+      - name: Name the APK after the ABI
+        run: |
+          set -e
+          for f in $(find artifacts/android-apk -name '*.apk'); do
+            mv "$f" "artifacts/android-apk/Bloom_${GITHUB_REF_NAME#v}_arm64.apk"
+          done
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             artifacts/windows-installer/*.exe
-            artifacts/android-apk/**/*.apk
+            artifacts/android-apk/*.apk
           generate_release_notes: true

@@ -14,8 +14,11 @@
 - `[lib] crate-type` is now `staticlib`, `cdylib`, `rlib` because the APK needs `libbloom_lib.so`; mingw cannot
   export every Rust symbol from a cdylib (`export ordinal too large: 95443`), so the windows-gnu target links with
   `-Wl,--exclude-all-symbols`. The desktop exe links the rlib and never loads the dll.
-- `release.yml` builds the NSIS installer and a debug-signed arm64 APK on every tag, then attaches both to the
-  GitHub release.
+- `release.yml` builds the NSIS installer and the arm64 APK on every tag, then attaches both to the GitHub release.
+- The APK is a **release** build, not debug: debug kept symbols and Rust's unoptimised JNI, which made it 132 MB.
+  A release APK has to be signed with a stable key or the next release is not installable as an update, so
+  `src-tauri/android/bloom-release.jks` (alias `bloom`) is committed and `keystore.properties` is written in CI.
+  It is a sideload signing identity, deliberately public; regenerate it before any store upload.
 
 ## Project screen: every board is a node
 - New default view on the start screen: **Nodes**. Each board is drawn as an idea node on the same 24 px dot
