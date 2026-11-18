@@ -55,23 +55,26 @@ jobs:
       - name: Init the Android project
         run: cargo tauri android init --ci
         working-directory: src-tauri
-      # the committed test key keeps updates installable across releases
-      - name: Signing config
-        run: |
-          cat > src-tauri/gen/android/keystore.properties <<EOF
-          storeFile=$GITHUB_WORKSPACE/src-tauri/android/bloom-release.jks
-          password=bloom-release
-          keyAlias=bloom
-          storePassword=bloom-release
-          keyPassword=bloom-release
-          EOF
-      - name: Build APK (release, signed)
+      # the tauri android template ships no signingConfig, so `tauri build` emits an unsigned release APK
+      - name: Build APK (release, unsigned)
         run: cargo tauri android build --apk --target aarch64
         working-directory: src-tauri
+      # sign with the committed test key: a stable key means the next release installs as an update
+      - name: Align and sign the APK
+        run: |
+          set -euo pipefail
+          BT="$ANDROID_HOME/build-tools/34.0.0"
+          APK=$(find src-tauri/gen/android/app/build/outputs/apk -name '*.apk' -print -quit)
+          mkdir -p out
+          "$BT/zipalign" -p -f 4 "$APK" out/aligned.apk
+          "$BT/apksigner" sign --ks src-tauri/android/bloom-release.jks \
+            --ks-key-alias bloom --ks-pass pass:bloom-release --key-pass pass:bloom-release \
+            --out out/Bloom-release-arm64.apk out/aligned.apk
+          "$BT/apksigner" verify --print-certs out/Bloom-release-arm64.apk | head -4
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          path: out/Bloom-release-arm64.apk
           if-no-files-found: error
 
   publish:
