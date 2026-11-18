@@ -1,0 +1,22 @@
+# build output
+src-tauri/target/
+src-tauri/gen/
+bloom-target/
+node_modules/
+dist/
+
+# local data
+*.db
+*.db-wal
+*.db-shm
+*.db.bak-*
+backups/
+
+# generated snapshot of every source file (scripts/bundle-code.py)
+CODE.md
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
