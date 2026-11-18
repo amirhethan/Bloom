@@ -11,6 +11,9 @@
   card drag); `touch-action: none` on the viewport. A board opens fit-to-screen on a phone instead of inheriting
   a desktop viewport, and rotates back to fit when the width crosses the breakpoint.
 - The AI panel is hidden on phones: its stream path shells out to `curl.exe`, which Android does not have.
+- `[lib] crate-type` is now `staticlib`, `cdylib`, `rlib` because the APK needs `libbloom_lib.so`; mingw cannot
+  export every Rust symbol from a cdylib (`export ordinal too large: 95443`), so the windows-gnu target links with
+  `-Wl,--exclude-all-symbols`. The desktop exe links the rlib and never loads the dll.
 - `release.yml` builds the NSIS installer and a debug-signed arm64 APK on every tag, then attaches both to the
   GitHub release.
 

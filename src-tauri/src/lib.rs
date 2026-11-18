@@ -89,6 +89,8 @@ fn daily_backup(app: &tauri::AppHandle, conn: &rusqlite::Connection, force: bool
     }
 }
 
+/// `mobile_entry_point` generates the JNI symbol the Android activity looks for.
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
