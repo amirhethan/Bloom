@@ -35,7 +35,10 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      # the runners ship the SDK; setup-android's own sdkmanager call is broken (no `tools` package)
+      # default `packages` is "tools platform-tools"; the `tools` package no longer exists
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Android SDK packages
         run: |
           yes | sdkmanager --licenses > /dev/null || true
