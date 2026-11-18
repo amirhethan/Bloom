@@ -6,3 +6,6 @@ registry = "sparse+https://mirrors.ustc.edu.cn/crates.io-index/"
 
 [target.x86_64-pc-windows-gnu]
 linker = "C:/msys64/ucrt64/bin/gcc.exe"
+# the lib also has to build as cdylib for Android; mingw chokes exporting every Rust symbol
+# ("export ordinal too large"), and the Windows build never loads the .dll anyway
+rustflags = ["-C", "link-arg=-Wl,--exclude-all-symbols"]
