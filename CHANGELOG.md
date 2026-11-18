@@ -1,5 +1,19 @@
 # Changelog
 
+## Android + phones (0.1.0)
+- New target: **Android** (arm64), same codebase. Desktop-only paths sit behind `cfg(desktop)` — window-rect
+  persistence, the asset-protocol scope and the `.bloom` argv scan — and the API key is stored in a 0600 file
+  inside app-private storage instead of the Credential Manager. Nothing else in the Rust core changed.
+- Phone layout (`≤ 720px`): the top-left keeps brand and board name, every control moves to a bottom row above
+  the tool bar, the minimap hides (no room), the zoom pill rides above the tools, the command bar becomes a
+  bottom sheet, the start screen and the script view go fluid, and project nodes stack in one column.
+- Touch: two fingers pinch to zoom and pan together (pointer events, capture phase, so a pinch never starts a
+  card drag); `touch-action: none` on the viewport. A board opens fit-to-screen on a phone instead of inheriting
+  a desktop viewport, and rotates back to fit when the width crosses the breakpoint.
+- The AI panel is hidden on phones: its stream path shells out to `curl.exe`, which Android does not have.
+- `release.yml` builds the NSIS installer and a debug-signed arm64 APK on every tag, then attaches both to the
+  GitHub release.
+
 ## Project screen: every board is a node
 - New default view on the start screen: **Nodes**. Each board is drawn as an idea node on the same 24 px dot
   grid as the canvas — tint dot, `IDEA` label, status word, title, card count and edited time. Positions are
